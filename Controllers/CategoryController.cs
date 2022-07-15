@@ -35,6 +35,9 @@ namespace Blog.Controllers
         {   
             if(category == null)
                 return BadRequest($"{nameof(category)} cannot be null.");
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
                 var categoria = new Category()
@@ -63,6 +66,8 @@ namespace Blog.Controllers
             var categoria = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
             if(categoria == null)
                 return NotFound($"{nameof(categoria)} not found");
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
             try
             {
                 categoria!.Name = category.Name;
