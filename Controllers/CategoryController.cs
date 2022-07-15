@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Blog.Controllers
 {
     [Route("api/v1/[controller]")]
+    [ApiController]
     public class CategoryController : ControllerBase
     {
         private readonly ILogger<CategoryController> _logger;
@@ -18,16 +19,33 @@ namespace Blog.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromServices]BlogDataContext context)
-        => Ok(await context.Categories.ToListAsync());
+        {
+            try
+            {
+                var categories = await context.Categories.ToListAsync();
+                return Ok(new ListCategoryResultDTO(categories));
+            }
+            catch
+            {
+                return StatusCode(500, new ListCategoryResultDTO("Falha na consulta de dados"));
+            }
+        }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync([FromServices]BlogDataContext context, [FromRoute] int id)
         {
-            var category = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
-            if(category == null)
-                return NotFound();
+            try
+            {
+                var category = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
+                if(category == null)
+                    return NotFound();
 
-            return Ok(category);
+                return Ok(new CategoryResultDTO(category));
+            }
+            catch
+            {
+                return StatusCode(500, new CategoryResultDTO("Falha na consulta de dados"));
+            }
         }
 
         [HttpPost]
@@ -35,8 +53,6 @@ namespace Blog.Controllers
         {   
             if(category == null)
                 return BadRequest($"{nameof(category)} cannot be null.");
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             try
             {
@@ -52,11 +68,11 @@ namespace Blog.Controllers
             }
             catch (DbUpdateException)
             {
-                return StatusCode(500, "Não foi possível inserir a categoria");
+                return StatusCode(500, new CategoryResultDTO("Não foi possível inserir a categoria"));
             }
             catch (Exception)
             {
-                return StatusCode(500, "Falha no servidor");
+                return StatusCode(500, new CategoryResultDTO("Falha no servidor"));
             }
         }
 
@@ -66,8 +82,6 @@ namespace Blog.Controllers
             var categoria = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
             if(categoria == null)
                 return NotFound($"{nameof(categoria)} not found");
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
             try
             {
                 categoria!.Name = category.Name;
