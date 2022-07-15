@@ -1,4 +1,5 @@
 using Blog.Data;
+using Blog.DTOs;
 using Blog.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,20 +26,26 @@ namespace Blog.Controllers
             var category = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
             if(category == null)
                 return NotFound();
-                
+
             return Ok(category);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromServices]BlogDataContext context, [FromBody]Category category)
+        public async Task<IActionResult> PostAsync([FromServices]BlogDataContext context, [FromBody]CreateCategoryDTO category)
         {   
             if(category == null)
                 return BadRequest($"{nameof(category)} cannot be null.");
             try
             {
-                await context.Categories.AddAsync(category);
+                var categoria = new Category()
+                {
+                    Id = 0,
+                    Name = category.Name,
+                    Slug = category.Slug.ToLower(),
+                };
+                await context.Categories.AddAsync(categoria);
                 await context.SaveChangesAsync();
-                return Created($"api/v1/category/{category.Id}", category);
+                return Created($"api/v1/category/{categoria.Id}", categoria);
             }
             catch (DbUpdateException)
             {
