@@ -58,7 +58,7 @@ namespace Blog.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutAsync([FromServices]BlogDataContext context, [FromRoute] int id, [FromBody]Category category)
+        public async Task<IActionResult> PutAsync([FromServices]BlogDataContext context, [FromRoute] int id, [FromBody]EditorCategoryDTO category)
         {   
             var categoria = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
             if(categoria == null)
