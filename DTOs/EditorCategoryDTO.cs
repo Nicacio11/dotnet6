@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Blog.DTOs
 {
-    public class CreateCategoryDTO
+    public class EditorCategoryDTO
     {
         public string Name { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;

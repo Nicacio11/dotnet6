@@ -31,7 +31,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromServices]BlogDataContext context, [FromBody]CreateCategoryDTO category)
+        public async Task<IActionResult> PostAsync([FromServices]BlogDataContext context, [FromBody]EditorCategoryDTO category)
         {   
             if(category == null)
                 return BadRequest($"{nameof(category)} cannot be null.");
