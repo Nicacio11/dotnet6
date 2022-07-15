@@ -1,5 +1,6 @@
 using Blog.Data;
 using Blog.DTOs;
+using Blog.Extensions;
 using Blog.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,13 +33,13 @@ namespace Blog.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetAsync([FromServices]BlogDataContext context, [FromRoute] int id)
+        public async Task<IActionResult> GetByIdAsync([FromServices]BlogDataContext context, [FromRoute] int id)
         {
             try
             {
                 var category = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
                 if(category == null)
-                    return NotFound();
+                    return NotFound(new CategoryResultDTO("Catégoria não encontrada"));
 
                 return Ok(new CategoryResultDTO(category));
             }
@@ -53,7 +54,9 @@ namespace Blog.Controllers
         {   
             if(category == null)
                 return BadRequest($"{nameof(category)} cannot be null.");
-
+            if(!ModelState.IsValid)
+                return BadRequest(new CategoryResultDTO(ModelState.GetErrors()));
+            
             try
             {
                 var categoria = new Category()
@@ -70,7 +73,7 @@ namespace Blog.Controllers
             {
                 return StatusCode(500, new CategoryResultDTO("Não foi possível inserir a categoria"));
             }
-            catch (Exception)
+            catch
             {
                 return StatusCode(500, new CategoryResultDTO("Falha no servidor"));
             }
@@ -79,6 +82,9 @@ namespace Blog.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> PutAsync([FromServices]BlogDataContext context, [FromRoute] int id, [FromBody]EditorCategoryDTO category)
         {   
+            if(!ModelState.IsValid)
+                return BadRequest(new CategoryResultDTO(ModelState.GetErrors()));
+            
             var categoria = await context.Categories.FirstOrDefaultAsync(x=> x.Id == id);
             if(categoria == null)
                 return NotFound($"{nameof(categoria)} not found");
@@ -92,11 +98,11 @@ namespace Blog.Controllers
             }
             catch (DbUpdateException)
             {
-                return StatusCode(500, "05XE9 Não foi possível atualizar a categoria");
+                return StatusCode(500, new CategoryResultDTO("Não foi possível inserir a categoria"));
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500, "Falha no servidor");
+                return StatusCode(500, new CategoryResultDTO("Falha no servidor"));
             }
         }
 
