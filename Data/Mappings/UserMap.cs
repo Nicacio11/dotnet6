@@ -28,10 +28,11 @@ namespace Blog.Data.Mappings
                 .HasColumnType("NVARCHAR")
                 .HasMaxLength(80);
 
-            builder.Property(x => x.Bio);
-            builder.Property(x => x.Email);
-            builder.Property(x => x.Image);
-            builder.Property(x => x.PasswordHash);
+            builder.Property(x => x.Bio).IsRequired(false);
+            builder.Property(x => x.Email).IsRequired();
+            builder.Property(x => x.GitHub).IsRequired(false);
+            builder.Property(x => x.Image).IsRequired(false);
+            builder.Property(x => x.PasswordHash).HasMaxLength(255).IsRequired();
 
             builder.Property(x => x.Slug)
                 .IsRequired()

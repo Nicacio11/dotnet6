@@ -25,7 +25,7 @@ namespace Blog.DTOs
         }
     }
 
-        public class ListCategoryResultDTO : ResultDTO<List<Category>>
+    public class ListCategoryResultDTO : ResultDTO<List<Category>>
     {
         public ListCategoryResultDTO(List<Category> data) : base(data)
         {
