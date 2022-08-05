@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 namespace Blog;
 public static class Configuration
 {
-    public static string JwtTokenKey 
-    { 
-        get
-        {
-            return "YWUzNjY3ZjYtNDA4NC00MDJjLTkzODItZTE1ZDBhZjk0MDZk";
-        } 
+    public static string JwtTokenKey { get; set; }
+
+    public static string ApiKeyName { get; set; }
+    public static string ApiKey { get; set; }
+
+    public static SmtpConfiguration Smtp = new();
+    public class SmtpConfiguration
+    {
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
-
-    public static string ApiKeyName = "api_key";
-    public static string ApiKey = "api_key/YWUzNjY3ZjYtNDA4NC00MDJjLTkzODItZTE1ZDBhZjk0MDZk/YWUzNjY3ZjYtNDA4NC00MDJ";
-
 }
+

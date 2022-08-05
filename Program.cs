@@ -1,29 +1,12 @@
 using System.Text;
 using Blog;
+using Blog.Configurations;
 using Blog.Data;
 using Blog.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var key = Encoding.ASCII.GetBytes(Configuration.JwtTokenKey);
-
-// configurando autorização com bearer
-builder.Services.AddAuthentication(x => 
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x => 
-{
-    x.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
+builder.AddConfiguration();
+builder.AddAuthentication();
 
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => 
 {
