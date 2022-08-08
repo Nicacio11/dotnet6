@@ -25,7 +25,7 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAsync()
+        public async Task<ActionResult> GetAsync([FromQuery]int page = 0, [FromQuery]int pageSize = 20)
         {
             return Ok(await context.Posts
             .Include(x => x.Author)
@@ -39,6 +39,9 @@ namespace Blog.Controllers
             //     Author = p.Author.Name,
             //     Category = p.Category.Name
             // })
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .OrderByDescending(x => x.LastUpdateDate)
             .ToListAsync());
         }
     }
