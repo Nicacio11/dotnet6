@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog.Data;
+using Blog.DTOs;
 using Blog.DTOs.Posts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,22 +28,30 @@ namespace Blog.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAsync([FromQuery]int page = 0, [FromQuery]int pageSize = 20)
         {
-            return Ok(await context.Posts
-            .Include(x => x.Author)
-            .Include(x => x.Category)
-            // .Select(p => new ListPostsDTO
-            // {
-            //     Id = p.Id, 
-            //     Title = p.Title,
-            //     LastUpdateDate = p.LastUpdateDate,
-            //     Slug = p.Slug,
-            //     Author = p.Author.Name,
-            //     Category = p.Category.Name
-            // })
-            .Skip(page * pageSize)
-            .Take(pageSize)
-            .OrderByDescending(x => x.LastUpdateDate)
-            .ToListAsync());
+            try
+            {
+                return Ok(await context.Posts
+                .Include(x => x.Author)
+                .Include(x => x.Category)
+                // .Select(p => new ListPostsDTO
+                // {
+                //     Id = p.Id, 
+                //     Title = p.Title,
+                //     LastUpdateDate = p.LastUpdateDate,
+                //     Slug = p.Slug,
+                //     Author = p.Author.Name,
+                //     Category = p.Category.Name
+                // })
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .OrderByDescending(x => x.LastUpdateDate)
+                .ToListAsync());
+                
+            }
+            catch
+            {
+                return StatusCode(500, new ResultDTO<string>(error: "Falha interna"));
+            } 
         }
     }
 }
