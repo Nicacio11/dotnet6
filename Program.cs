@@ -1,5 +1,7 @@
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 using Blog.Configurations;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,16 @@ builder.Services.AddServices();
 //adiciona o cache de memoria
 builder.Services.AddMemoryCache();
 
+builder.Services.AddResponseCompression(options => 
+{
+    //options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    //options.Providers.Add<CustomCompressionProvider>();
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options => 
+{
+    options.Level = CompressionLevel.Optimal;
+});
 builder.Services.AddControllers()
 .ConfigureApiBehaviorOptions(options => 
 {
@@ -32,5 +44,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
+app.UseResponseCompression();
 
 app.Run();
