@@ -7,6 +7,8 @@ builder.AddConfiguration();
 builder.AddAuthentication();
 builder.Services.AddServices();
 
+//adiciona o cache de memoria
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers()
 .ConfigureApiBehaviorOptions(options => 

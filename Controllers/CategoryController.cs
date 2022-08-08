@@ -4,6 +4,7 @@ using Blog.Extensions;
 using Blog.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Blog.Controllers
 {
@@ -19,17 +20,26 @@ namespace Blog.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromServices]BlogDataContext context)
+        public async Task<IActionResult> GetAsync([FromServices]BlogDataContext context, [FromServices]IMemoryCache cache)
         {
             try
             {
-                var categories = await context.Categories.ToListAsync();
-                return Ok(new ListCategoryResultDTO(categories));
+                var categories = cache.GetOrCreate("CategoiesCache", async entry => 
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                    return await GetCategory(context);
+                });
+                return Ok(new ListCategoryResultDTO(await categories));
             }
             catch
             {
                 return StatusCode(500, new ListCategoryResultDTO("Falha na consulta de dados"));
             }
+        }
+
+        private async Task<List<Category>> GetCategory(BlogDataContext context)
+        {
+            return await context.Categories.ToListAsync();
         }
 
         [HttpGet("{id:int}")]
