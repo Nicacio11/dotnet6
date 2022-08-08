@@ -26,7 +26,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateAccount([FromServices]BlogDataContext context, [FromBody]CreateAccountDTO account)
+    public async Task<ActionResult> CreateAccount([FromServices]EmailService emailService, [FromServices]BlogDataContext context, [FromBody]CreateAccountDTO account)
     {
         if(account is null)
             return BadRequest($"{nameof(account)} cannot be null.");
@@ -46,7 +46,14 @@ public class AccountController : ControllerBase
             {
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
-                return Created($"api/v1/account/{user.Id}", new CreateAccountResultDTO(new CreateAccountDTO(){ Name = user.Name, Email = user.Email, Password = password }));
+                emailService.Send(new Email
+                {
+                    ToEmail = user.Email,
+                    ToName = user.Name,
+                    Subject = "Bem vindo ao Blog",
+                    Body = $"Sua senha é {password}"
+                });
+                return Created($"api/v1/account/{user.Id}", new CreateAccountResultDTO(new CreateAccountDTO(){ Name = user.Name, Email = user.Email }));
             }
             catch (DbUpdateException)
             {
