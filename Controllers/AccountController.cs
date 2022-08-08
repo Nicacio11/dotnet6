@@ -1,6 +1,8 @@
 
+using System.Text.RegularExpressions;
 using Blog.Data;
 using Blog.DTOs;
+using Blog.DTOs.Accounts;
 using Blog.Extensions;
 using Blog.Models;
 using Blog.Services;
@@ -120,5 +122,43 @@ public class AccountController : ControllerBase
     public IActionResult GetAdmin()
     {
         return Ok(User.Identity.Name);
+    }
+
+    [HttpPost("upload-image")]
+    [Authorize]
+    public async Task<ActionResult> Upload([FromServices]BlogDataContext context, [FromBody]UploadImageDTO dto)
+    {
+        if(dto is null)
+            return BadRequest($"{nameof(dto)} cannot be null.");
+        if(!ModelState.IsValid)
+            return BadRequest(new CreateAccountResultDTO(ModelState.GetErrors()));
+
+        var fileName = $"{Guid.NewGuid()}.jpg";
+        var data = new Regex(@"^data:image\/[a-z]+;base64,").Replace(dto.Base64Image, "");
+
+        var bytes = Convert.FromBase64String(data);
+
+
+        try
+        {
+            await System.IO.File.WriteAllBytesAsync($"wwwroot/images/{fileName}", bytes);
+
+            var user = await context
+            .Users
+            .FirstOrDefaultAsync(x => x.Email == User.Identity.Name);
+
+            user.Image = $"images/{fileName}";
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+
+        if (user == null)
+            return NotFound(new ResultDTO<string>(error: "Usuário não encontrado"));
+        }
+        catch (System.Exception)
+        {
+            return StatusCode(500, new ResultDTO<string>(error: "Falha ao inserir imagem"));
+        }
+
+        return Ok(new ResultDTO<string>("Imagem alterada com sucesso!", null));
     }
 }

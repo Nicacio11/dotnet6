@@ -16,7 +16,7 @@ var app = builder.Build();
 //configurando autenticação e autorização
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();
