@@ -40,6 +40,7 @@ var app = builder.Build();
 
 
 //configurando autenticação e autorização
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
