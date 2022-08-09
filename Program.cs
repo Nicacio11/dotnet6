@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddConfiguration();
 builder.AddAuthentication();
 builder.Services.AddServices(builder.Configuration);
+builder.Services.AddSwaggerSettings();
 
 //adiciona o cache de memoria
 builder.Services.AddMemoryCache();
@@ -46,5 +47,9 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
 app.UseResponseCompression();
-
+if(app.Environment.IsDevelopment())
+{
+  app.UseSwagger();
+  app.UseSwaggerUI();  
+}
 app.Run();
