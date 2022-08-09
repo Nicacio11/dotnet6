@@ -19,12 +19,9 @@ namespace Blog.Data
         // public DbSet<PostWithTagsCount> PostWithTagsCount { get; set; }
         // public DbSet<UserRole> UserRoles { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public BlogDataContext(DbContextOptions<BlogDataContext> options) : base(options)
         {
-            optionsBuilder.UseSqlServer("Server=localhost,1433;Database=BlogAspNet6;User ID=sa;Password=1q2w3e4r@#$;Trusted_Connection=False; TrustServerCertificate=True");
-            optionsBuilder.LogTo(Console.WriteLine);
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CategoryMap());

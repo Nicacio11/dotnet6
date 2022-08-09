@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddConfiguration();
 builder.AddAuthentication();
-builder.Services.AddServices();
+builder.Services.AddServices(builder.Configuration);
 
 //adiciona o cache de memoria
 builder.Services.AddMemoryCache();
